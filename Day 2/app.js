@@ -40,10 +40,21 @@ scene.add(mesh);
 let canvas = document.querySelector('canvas');
 
 // WebGL renderer create karna aur usay canvas se connect karna
-let renderer = new THREE.WebGLRenderer({ canvas });
+let renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 
 // Renderer ka size set karna window ke size ke barabar
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 // Scene ko render karna taake 3D object dikhai de
 renderer.render(scene, camera);
+
+
+// Animation loop create karna
+let clock = new THREE.Clock();
+function animate() {
+  window.requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+  mesh.rotation.x = clock.getElapsedTime();
+  mesh.rotation.y = clock.getElapsedTime();
+}
+animate();
