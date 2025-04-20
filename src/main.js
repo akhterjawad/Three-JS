@@ -109,7 +109,7 @@ renderer.domElement.addEventListener("webglcontextrestored", () => {
 // HDRI Environment Lighting
 const hdriLoader = new RGBELoader();
 hdriLoader.load(
-  "3d_Models_&_Background/horn-koppe_snow_4k.hdr",
+  "./3d_Models_and_Background/horn-koppe_snow_4k.hdr",
   (texture) => {
     texture.mapping = THREE.EquirectangularReflectionMapping;
     scene.environment = texture;
@@ -124,7 +124,7 @@ hdriLoader.load(
 // 3D Model loading with better error handling
 const loader = new GLTFLoader();
 loader.load(
-  "3d_Models_&_Background/armored_mech_noir_npr.glb",
+  "3d_Models_and_Background/armored_mech_noir_npr.glb",
   function (gltf) {
     scene.add(gltf.scene);
   },
