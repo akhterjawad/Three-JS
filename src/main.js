@@ -1,13 +1,18 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 // Scene setup
 const scene = new THREE.Scene();
 
 // Camera setup
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
 camera.position.set(1, 1, 5);
 
 // Renderer with better error handling
@@ -20,20 +25,20 @@ function initRenderer() {
     renderer = new THREE.WebGLRenderer({
       antialias: true,
       powerPreference: "high-performance",
-      preserveDrawingBuffer: true // Helps with some mobile devices
+      preserveDrawingBuffer: true, // Helps with some mobile devices
     });
-    
+
     // Verify context was created
     if (!renderer.getContext()) {
-      throw new Error('Could not create WebGL context');
+      throw new Error("Could not create WebGL context");
     }
-    
+
     return true;
   } catch (error) {
-    console.error('WebGL initialization failed:', error);
-    
+    console.error("WebGL initialization failed:", error);
+
     // Show user-friendly error message
-    const warning = document.createElement('div');
+    const warning = document.createElement("div");
     warning.style = `
       position: fixed;
       top: 0;
@@ -57,14 +62,14 @@ function initRenderer() {
       </ul>
     `;
     document.body.appendChild(warning);
-    
+
     return false;
   }
 }
 
 if (!initRenderer()) {
   // Stop execution if renderer couldn't be created
-  throw new Error('Critical: WebGL renderer could not be initialized');
+  throw new Error("Critical: WebGL renderer could not be initialized");
 }
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit to 2x for performance
@@ -73,38 +78,59 @@ renderer.toneMappingExposure = 0.8;
 document.body.appendChild(renderer.domElement);
 
 // Add context lost event handler
-renderer.domElement.addEventListener('webglcontextlost', (event) => {
+renderer.domElement.addEventListener("webglcontextlost", (event) => {
   event.preventDefault();
-  console.warn('WebGL context lost. Attempting recovery...');
+  console.warn("WebGL context lost. Attempting recovery...");
   // You could add recovery logic here
 });
 
 // Add context restored event handler
-renderer.domElement.addEventListener('webglcontextrestored', () => {
-  console.log('WebGL context restored. Reinitializing...');
-  initScene(); // You'll need to implement this function
+renderer.domElement.addEventListener("webglcontextrestored", () => {
+  console.log("WebGL context restored. Refreshing page...");
+  window.location.reload(); // Simple solution - refresh the page
 });
+
+// Or if you want to properly reinitialize:
+/*
+function initScene() {
+  // Recreate your scene, camera, controls, loaders, etc.
+  // This would be similar to your existing setup code
+  console.log("Reinitializing scene...");
+  // You would need to implement all the initialization logic here
+}
+
+// Then use this in the event handler:
+renderer.domElement.addEventListener("webglcontextrestored", () => {
+  console.log("WebGL context restored. Reinitializing...");
+  initScene();
+});
+*/
 
 // HDRI Environment Lighting
 const hdriLoader = new RGBELoader();
-hdriLoader.load('horn-koppe_snow_4k.hdr', (texture) => {
-  texture.mapping = THREE.EquirectangularReflectionMapping;
-  scene.environment = texture;
-  scene.background = texture;
-}, undefined, (error) => {
-  console.error('Error loading HDRI:', error);
-});
+hdriLoader.load(
+  "3d_Models_&_Background/horn-koppe_snow_4k.hdr",
+  (texture) => {
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    scene.environment = texture;
+    scene.background = texture;
+  },
+  undefined,
+  (error) => {
+    console.error("Error loading HDRI:", error);
+  }
+);
 
 // 3D Model loading with better error handling
 const loader = new GLTFLoader();
 loader.load(
-  './armored_mech_-_noir_npr.glb', 
-  function(gltf) {
+  "3d_Models_&_Background/armored_mech_noir_npr.glb",
+  function (gltf) {
     scene.add(gltf.scene);
   },
   undefined, // Progress callback can go here
-  function(error) {
-    console.error('Error loading GLTF model:', error);
+  function (error) {
+    console.error("Error loading GLTF model:", error);
   }
 );
 
@@ -116,7 +142,7 @@ controls.enableZoom = false;
 
 // Window resize handler with debounce to prevent rapid calls
 let resizeTimeout;
-window.addEventListener('resize', () => {
+window.addEventListener("resize", () => {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(() => {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -132,7 +158,7 @@ function animate() {
     controls.update();
     renderer.render(scene, camera);
   } catch (error) {
-    console.error('Error in animation loop:', error);
+    console.error("Error in animation loop:", error);
     // You might want to attempt recovery here
   }
 }
@@ -141,9 +167,9 @@ function animate() {
 animate();
 
 // Cleanup function for when the page is closed/unloaded
-window.addEventListener('beforeunload', () => {
+window.addEventListener("beforeunload", () => {
   // Properly dispose of Three.js resources
-  scene.traverse(object => {
+  scene.traverse((object) => {
     if (object.isMesh) {
       object.geometry?.dispose();
       object.material?.dispose();
